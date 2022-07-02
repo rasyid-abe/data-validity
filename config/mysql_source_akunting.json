@@ -1,0 +1,7 @@
+{
+    "HOST": "10.130.248.105",
+    "USER": "akunting_dev",
+    "PASS": "m4jOOAkunt1N99#2021",
+    "PORT": "3306",
+    "DBNAME": "prd_akunting"
+}

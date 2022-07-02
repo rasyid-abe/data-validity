@@ -1,7 +1,7 @@
 import falcon
 import json
 from datetime import datetime
-from Models import ValidityAkunting
+from Models import ValiditySubVarian
 
 class validity(object):
     def on_post(self, req, resp):
@@ -11,6 +11,6 @@ class validity(object):
 
     def on_get(self, req, resp):
         resp.status = falcon.HTTP_200
-        content=ValidityAkunting.processValidity()
+        content=ValiditySubVarian.processValidity()
         data = {'status':'success','content':content,'enum':'1'}
         resp.body = json.dumps(data)

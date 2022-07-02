@@ -1,0 +1,7 @@
+{
+    "HOST": "10.130.1.107",
+    "USER": "dev_etl",
+    "PASS": "m4jOO@123mart!",
+    "PORT": "3306",
+    "DBNAME": "mart"
+}

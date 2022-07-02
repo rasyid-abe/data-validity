@@ -1,0 +1,7 @@
+{
+    "HOST": "10.130.138.114",
+    "USER": "mart_user",
+    "PASS": "m4joo#2021",
+    "PORT": "3306",
+    "DBNAME": "klopos"
+}
