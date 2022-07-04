@@ -11,7 +11,7 @@ import traceback
 from ruamel import yaml
 from datetime import datetime, timedelta
 
-s = open('./config/mysql_source.json')
+s = open('./config/mysql_source_akunting.json')
 source = json.load(s)
 s.close()
 con_source = pymysql.connect(
@@ -45,23 +45,22 @@ def query_data_source():
     with con_source.cursor() as c_source:
         c_source.execute(f"""
             SELECT
-            	t.M_User_id_user user,
-            	COUNT(id_transaction_addon_detail) rows
+            	j.M_User_id_user user,
+            	COUNT(j.jur_no) total
             FROM
-            	Transactions t
-            JOIN Transaction_Detail td ON
-            	t.id_transaction = td.Transactions_id_transaction
-            JOIN Transaction_Addon_Detail tad ON
-            	tad.Transaction_Detail_id_transaction_detail = td.id_transaction_detail
-            JOIN Add_Ons_Detail ad ON
-            	ad.id_add_ons_detail = tad.Add_Ons_Detail_id_add_ons_detail
+            	Jurnal j
+            JOIN Jurnal_Detail jd ON
+            	j.jur_no = jd.jur_no
+            	and j.M_User_id_user = jd.M_User_id_user
+            JOIN Akunting a ON
+            	a.akunting_no = jd.rek_no
+            	AND a.M_User_id_user = j.M_User_id_user
             WHERE
-            	transaction_tgl BETWEEN '{yesterday}' AND '{today}'
-            AND transaction_refund = 0
-            AND Transaction_purpose IN ('5','9')
-            	AND status = '1'
+            	j.updatedate BETWEEN '{yesterday}' AND '{today}'
+            	AND j.active_status in(1, 9)
+            	AND j.jur_tgl > '1970-01-01 00:00:00'
             GROUP BY
-            	t.M_User_id_user
+            	j.M_User_id_user
         """)
 
         rows = c_source.fetchall()
@@ -73,11 +72,11 @@ def query_data_target():
         c_target.execute(f"""
             SELECT
             	M_User_id_user user,
-            	COUNT(raw_mart_sales_addon_detail_id_transaction_addon_detail) total
+            	COUNT(raw_mart_jur_detail_no) total
             FROM
-            	raw_mart_sales_addon_detail
+            	raw_mart_jurnal
             WHERE
-            	raw_mart_sales_addon_detail_datetime BETWEEN '{yesterday}' AND '{today}'
+            	raw_mart_jurnal_datetime BETWEEN '{yesterday}' AND '{today}'
             GROUP BY
             	M_User_id_user
         """)
@@ -92,7 +91,7 @@ def history_validity(data):
         INSERT INTO validity_history (etl_name, id_user, data_target, data_source, status, actdate, ts_current, ts_end)
         VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
     """
-    ins = ['Sub-Varian', data[0], data[1], data[2], data[3], datetime.now(), yesterday, today]
+    ins = ['Akunting', data[0], data[1], data[2], data[3], datetime.now(), yesterday, today]
 
     cur.execute(sql, ins)
     con_target.commit()
@@ -100,7 +99,7 @@ def history_validity(data):
 
 def processValidity():
     d_source = query_data_source()
-    dict_source = {i['user']:i['rows'] for i in d_source}
+    dict_source = {i['user']:i['total'] for i in d_source}
 
     d_target = query_data_target()
     dict_target = {i['user']:i['total'] for i in d_target}

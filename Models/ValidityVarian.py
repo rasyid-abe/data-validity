@@ -99,7 +99,6 @@ def history_validity(data):
     cur.close()
 
 def processValidity():
-    ## DATAFRAME
     d_source = query_data_source()
     dict_source = {i['user']:i['rows'] for i in d_source}
 
@@ -109,7 +108,6 @@ def processValidity():
     dict_result = {}
     dict_inconsistent = {}
     for i in d_target:
-        ## check data user exist
         if i['user'] in dict_source:
             if i['total'] != dict_source[i['user']]:
                 dict_inconsistent[i['user']] = 1

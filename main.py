@@ -7,7 +7,7 @@ from datetime import datetime
 import pytz
 import json
 from Middleware.LoggingMiddleware import LoggingMiddleware
-from Controller import RawmartVarian, RawmartSubVarian, RawmartProduk
+from Controller import RawmartVarian, RawmartSubVarian, RawmartProduk, RawmartAkunting
 
 LOGGER = Logger()
 cors = CORS(allow_all_origins=True, allow_all_headers=True, allow_all_methods=True)
@@ -21,5 +21,6 @@ api.add_error_handler(Exception, generic_error_handler)
 api.add_route('/validity/rawmart/varian', RawmartVarian.validity())
 api.add_route('/validity/rawmart/sub_varian', RawmartSubVarian.validity())
 api.add_route('/validity/rawmart/produk', RawmartProduk.validity())
+api.add_route('/validity/rawmart/akunting', RawmartAkunting.validity())
 
 serve(api, host='0.0.0.0', port=8101, threads=1000)
